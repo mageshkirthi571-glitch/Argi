@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Results — AgriBotany Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">🔍 Search</span>
+      <h1>Search Results</h1>
+      <p id="searchSummary"></p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h3>Plants</h3>
+        <div class="grid grid-3" id="plantResults" style="margin-bottom:2rem;"></div>
+
+        <h3>Medicinal Plants</h3>
+        <div class="grid grid-3" id="medResults" style="margin-bottom:2rem;"></div>
+
+        <h3>Blog Posts</h3>
+        <div class="grid grid-3" id="blogResults"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("home");
+
+    const q = (getQueryParam("q") || "").trim();
+    const qLower = q.toLowerCase();
+    document.getElementById("searchSummary").textContent = q
+      ? `Showing results for "${q}"`
+      : "Enter a search term using the box above.";
+
+    function emptyMsg(text) {
+      return `<div class="card"><p>${text}</p></div>`;
+    }
+
+    if (q) {
+      // Plants
+      const plants = DataStore.get("plants").filter(p =>
+        p.common.toLowerCase().includes(qLower) ||
+        p.scientific.toLowerCase().includes(qLower) ||
+        p.family.toLowerCase().includes(qLower) ||
+        p.uses.toLowerCase().includes(qLower)
+      );
+      document.getElementById("plantResults").innerHTML = plants.length
+        ? plants.map(p => `
+          <div class="specimen-card">
+            <div class="specimen-photo">${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.common)}">` : '🌿'}</div>
+            <div class="specimen-body">
+              <div class="specimen-id">${escapeHtml(p.category)}</div>
+              <h3>${escapeHtml(p.scientific)}</h3>
+              <div class="specimen-common">${escapeHtml(p.common)}</div>
+              <table class="specimen-table">
+                <tr><td>Family</td><td>${escapeHtml(p.family)}</td></tr>
+                <tr><td>Uses</td><td>${escapeHtml(p.uses)}</td></tr>
+              </table>
+              <a class="card-link" href="plant-id.html">View in Plant ID →</a>
+            </div>
+          </div>
+        `).join("")
+        : emptyMsg("No matching plants found.");
+
+      // Medicinal plants
+      const meds = DataStore.get("medicinalPlants").filter(m =>
+        m.common.toLowerCase().includes(qLower) ||
+        m.scientific.toLowerCase().includes(qLower) ||
+        m.traditionalUses.toLowerCase().includes(qLower) ||
+        m.activeCompounds.toLowerCase().includes(qLower)
+      );
+      document.getElementById("medResults").innerHTML = meds.length
+        ? meds.map(m => `
+          <div class="card">
+            <div class="meta">Medicinal Plant</div>
+            <h3>${escapeHtml(m.common)}</h3>
+            <p style="font-style:italic; margin-bottom:0.3rem;">${escapeHtml(m.scientific)}</p>
+            <p>${escapeHtml(m.traditionalUses)}</p>
+            <a class="card-link" href="medicinal-plants.html">View in Medicinal Plants →</a>
+          </div>
+        `).join("")
+        : emptyMsg("No matching medicinal plants found.");
+
+      // Blog posts
+      const posts = DataStore.get("blogPosts").filter(p =>
+        p.title.toLowerCase().includes(qLower) ||
+        p.excerpt.toLowerCase().includes(qLower) ||
+        p.content.toLowerCase().includes(qLower)
+      );
+      document.getElementById("blogResults").innerHTML = posts.length
+        ? posts.map(p => `
+          <div class="card">
+            <div class="meta">${escapeHtml(p.category)} · ${escapeHtml(p.date)}</div>
+            <h3>${escapeHtml(p.title)}</h3>
+            <p>${escapeHtml(p.excerpt)}</p>
+            <a class="card-link" href="blog.html">View in Blog →</a>
+          </div>
+        `).join("")
+        : emptyMsg("No matching blog posts found.");
+    } else {
+      document.getElementById("plantResults").innerHTML = "";
+      document.getElementById("medResults").innerHTML = "";
+      document.getElementById("blogResults").innerHTML = "";
+    }
+  </script>
+</body>
+</html>

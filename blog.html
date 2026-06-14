@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — AgriBotany Hub</title>
+  <meta name="description" content="Articles about plants, agriculture, and environmental conservation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">✍️ Field Journal</span>
+      <h1>Blog</h1>
+      <p>Articles about plants, agriculture, and environmental conservation — written from a student's perspective.</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div id="admin-bar-placeholder"></div>
+        <div id="adminPanel" class="admin-panel hidden">
+          <h3>Write a new post</h3>
+          <form id="postForm">
+            <div class="form-row">
+              <label for="postTitle">Title</label>
+              <input type="text" id="postTitle" required placeholder="Post title">
+            </div>
+            <div class="grid grid-2">
+              <div class="form-row">
+                <label for="postCategory">Category</label>
+                <select id="postCategory">
+                  <option value="Botany">Botany</option>
+                  <option value="Agriculture">Agriculture</option>
+                  <option value="Forestry">Forestry</option>
+                  <option value="Conservation">Conservation</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="postAuthor">Author</label>
+                <input type="text" id="postAuthor" value="AgriBotany Hub">
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="postExcerpt">Excerpt (short summary)</label>
+              <textarea id="postExcerpt" required placeholder="A 1-2 sentence summary shown in the article list"></textarea>
+            </div>
+            <div class="form-row">
+              <label for="postContent">Content</label>
+              <textarea id="postContent" required style="min-height:140px;" placeholder="Full article text"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Publish Post</button>
+          </form>
+        </div>
+
+        <div class="filter-bar" id="blogFilter">
+          <button data-category="all" class="active">All</button>
+          <button data-category="Botany">Botany</button>
+          <button data-category="Agriculture">Agriculture</button>
+          <button data-category="Forestry">Forestry</button>
+          <button data-category="Conservation">Conservation</button>
+        </div>
+
+        <div id="blogList" class="grid grid-3"></div>
+
+        <!-- Single post view -->
+        <div id="postView" style="display:none;">
+          <button class="btn btn-outline" style="border-color:var(--line); color:var(--ink); margin-bottom:1.2rem;" onclick="closePost()">← Back to all posts</button>
+          <article class="card" id="postArticle"></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("blog");
+    initAdminBar("admin-bar-placeholder", (isAdmin) => {
+      document.getElementById("adminPanel").classList.toggle("hidden", !isAdmin);
+      renderList();
+    });
+
+    let currentCategory = "all";
+    let searchFilter = (getQueryParam("q") || "").toLowerCase();
+
+    function renderList() {
+      let posts = DataStore.get("blogPosts").slice().sort((a, b) => b.date.localeCompare(a.date));
+      const isAdmin = AdminAuth.isLoggedIn();
+
+      if (currentCategory !== "all") posts = posts.filter(p => p.category === currentCategory);
+      if (searchFilter) {
+        posts = posts.filter(p =>
+          p.title.toLowerCase().includes(searchFilter) ||
+          p.excerpt.toLowerCase().includes(searchFilter) ||
+          p.content.toLowerCase().includes(searchFilter)
+        );
+      }
+
+      if (posts.length === 0) {
+        document.getElementById("blogList").innerHTML = `<div class="card"><p>No posts found.</p></div>`;
+        return;
+      }
+
+      document.getElementById("blogList").innerHTML = posts.map(p => `
+        <div class="card">
+          <div class="meta">${escapeHtml(p.category)} · ${escapeHtml(p.date)}</div>
+          <h3>${escapeHtml(p.title)}</h3>
+          <p>${escapeHtml(p.excerpt)}</p>
+          <a class="card-link" href="#" onclick="openPost('${p.id}'); return false;">Read more →</a>
+          ${isAdmin ? `<a class="card-link" href="#" style="color:#B5544A; margin-top:0.3rem;" onclick="deletePost('${p.id}'); return false;">Delete</a>` : ''}
+        </div>
+      `).join("");
+    }
+
+    function openPost(id) {
+      const post = DataStore.get("blogPosts").find(p => p.id === id);
+      if (!post) return;
+      document.getElementById("blogList").style.display = "none";
+      document.getElementById("blogFilter").style.display = "none";
+      document.getElementById("postView").style.display = "block";
+      document.getElementById("postArticle").innerHTML = `
+        <div class="meta">${escapeHtml(post.category)} · ${escapeHtml(post.date)} · By ${escapeHtml(post.author)}</div>
+        <h2 style="margin-top:0.3rem;">${escapeHtml(post.title)}</h2>
+        <p style="font-size:1rem;">${escapeHtml(post.content)}</p>
+      `;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function closePost() {
+      document.getElementById("blogList").style.display = "";
+      document.getElementById("blogFilter").style.display = "";
+      document.getElementById("postView").style.display = "none";
+    }
+
+    function deletePost(id) {
+      if (!confirm("Delete this post?")) return;
+      const posts = DataStore.get("blogPosts").filter(p => p.id !== id);
+      DataStore.set("blogPosts", posts);
+      renderList();
+    }
+
+    document.querySelectorAll("#blogFilter button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#blogFilter button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentCategory = btn.dataset.category;
+        renderList();
+      });
+    });
+
+    document.getElementById("postForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const posts = DataStore.get("blogPosts");
+      posts.push({
+        id: DataStore.genId("b"),
+        title: document.getElementById("postTitle").value.trim(),
+        category: document.getElementById("postCategory").value,
+        author: document.getElementById("postAuthor").value.trim() || "AgriBotany Hub",
+        date: new Date().toISOString().slice(0, 10),
+        excerpt: document.getElementById("postExcerpt").value.trim(),
+        content: document.getElementById("postContent").value.trim()
+      });
+      DataStore.set("blogPosts", posts);
+      e.target.reset();
+      document.getElementById("postAuthor").value = "AgriBotany Hub";
+      renderList();
+    });
+
+    renderList();
+  </script>
+</body>
+</html>

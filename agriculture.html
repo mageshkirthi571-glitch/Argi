@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agriculture — AgriBotany Hub</title>
+  <meta name="description" content="Crop cultivation methods, organic farming, soil management, irrigation techniques, pest and disease management, and a crop calendar.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">🌾 Field Practice</span>
+      <h1>Agriculture</h1>
+      <p>Crop cultivation methods, organic farming, soil management, irrigation techniques, and pest & disease management — with a quick-reference crop calendar.</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="eyebrow">Core Topics</span>
+          <h2>Agricultural Practices</h2>
+        </div>
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="meta">🌱 Cultivation</div>
+            <h3>Crop Cultivation Methods</h3>
+            <p>Land preparation, seed selection, sowing methods (broadcasting, drilling, transplanting), spacing, and crop establishment techniques for field and horticultural crops.</p>
+          </div>
+          <div class="card">
+            <div class="meta">🍃 Organic</div>
+            <h3>Organic Farming</h3>
+            <p>Use of compost, vermicompost, green manure, biofertilizers, and crop rotation to maintain fertility without synthetic chemical inputs. Emphasizes long-term soil and ecosystem health.</p>
+          </div>
+          <div class="card">
+            <div class="meta">🪨 Soil</div>
+            <h3>Soil Management</h3>
+            <p>Soil testing, pH correction, organic matter addition, erosion control through contour bunding and mulching, and maintaining soil structure for healthy root growth.</p>
+          </div>
+          <div class="card">
+            <div class="meta">💧 Water</div>
+            <h3>Irrigation Techniques</h3>
+            <p>Comparison of surface, drip, and sprinkler irrigation; scheduling based on crop water requirement; water-saving practices for water-scarce regions.</p>
+          </div>
+          <div class="card">
+            <div class="meta">🐛 Protection</div>
+            <h3>Pest & Disease Management</h3>
+            <p>Identification of common pests and pathogens, Integrated Pest Management (IPM) combining biological control, resistant varieties, and judicious pesticide use.</p>
+          </div>
+          <div class="card">
+            <div class="meta">🌾 Nutrition</div>
+            <h3>Crop Nutrition</h3>
+            <p>Role of macronutrients (N, P, K) and micronutrients in plant growth, deficiency symptoms, and balanced fertilizer application based on soil test recommendations.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Crop Calendar -->
+    <section class="section section-alt">
+      <div class="container">
+        <div id="admin-bar-placeholder"></div>
+        <div id="adminPanel" class="admin-panel hidden">
+          <h3>Add a crop calendar entry</h3>
+          <form id="cropForm">
+            <div class="form-row">
+              <label for="cropName">Crop name</label>
+              <input type="text" id="cropName" required placeholder="e.g. Sorghum (Kharif)">
+            </div>
+            <div class="form-row">
+              <label for="cropSowing">Sowing period</label>
+              <input type="text" id="cropSowing" required placeholder="e.g. June - July">
+            </div>
+            <div class="form-row">
+              <label for="cropHarvest">Harvest period</label>
+              <input type="text" id="cropHarvest" required placeholder="e.g. October - November">
+            </div>
+            <div class="form-row">
+              <label for="cropSeason">Season</label>
+              <select id="cropSeason">
+                <option value="Kharif">Kharif</option>
+                <option value="Rabi">Rabi</option>
+                <option value="Zaid/Kharif">Zaid/Kharif</option>
+                <option value="Annual">Annual</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Entry</button>
+          </form>
+        </div>
+
+        <div class="section-header">
+          <span class="eyebrow">📅 Quick Reference</span>
+          <h2>Crop Calendar</h2>
+          <p>Typical sowing and harvest windows for major crops grown in India. Actual timing varies by region, variety, and rainfall.</p>
+        </div>
+        <table class="data-table" id="cropTable">
+          <thead>
+            <tr><th>Crop</th><th>Sowing</th><th>Harvest</th><th>Season</th><th id="cropActionsHeader" style="display:none;">Actions</th></tr>
+          </thead>
+          <tbody id="cropTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("agriculture");
+    initAdminBar("admin-bar-placeholder", (isAdmin) => {
+      document.getElementById("adminPanel").classList.toggle("hidden", !isAdmin);
+      document.getElementById("cropActionsHeader").style.display = isAdmin ? "" : "none";
+      renderCropCalendar();
+    });
+
+    function renderCropCalendar() {
+      const calendar = DataStore.get("cropCalendar");
+      const isAdmin = AdminAuth.isLoggedIn();
+      document.getElementById("cropTableBody").innerHTML = calendar.map((c, idx) => `
+        <tr>
+          <td>${escapeHtml(c.crop)}</td>
+          <td>${escapeHtml(c.sowing)}</td>
+          <td>${escapeHtml(c.harvest)}</td>
+          <td><span class="tag">${escapeHtml(c.season)}</span></td>
+          ${isAdmin ? `<td><button class="btn btn-outline" style="border-color:var(--line); color:var(--ink); padding:0.3rem 0.7rem;" onclick="deleteCrop(${idx})">Delete</button></td>` : ''}
+        </tr>
+      `).join("");
+    }
+
+    function deleteCrop(idx) {
+      if (!confirm("Delete this crop calendar entry?")) return;
+      const calendar = DataStore.get("cropCalendar");
+      calendar.splice(idx, 1);
+      DataStore.set("cropCalendar", calendar);
+      renderCropCalendar();
+    }
+
+    document.getElementById("cropForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const calendar = DataStore.get("cropCalendar");
+      calendar.push({
+        crop: document.getElementById("cropName").value.trim(),
+        sowing: document.getElementById("cropSowing").value.trim(),
+        harvest: document.getElementById("cropHarvest").value.trim(),
+        season: document.getElementById("cropSeason").value
+      });
+      DataStore.set("cropCalendar", calendar);
+      e.target.reset();
+      renderCropCalendar();
+    });
+
+    renderCropCalendar();
+  </script>
+</body>
+</html>

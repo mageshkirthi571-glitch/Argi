@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botany Notes — AgriBotany Hub</title>
+  <meta name="description" content="B.Sc. Botany study notes: Plant Anatomy, Plant Physiology, Genetics, Taxonomy, and Biotechnology — downloadable resources.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">📚 Study Materials</span>
+      <h1>Botany Notes</h1>
+      <p>Core topics for B.Sc. Botany — Plant Anatomy, Plant Physiology, Genetics, Taxonomy, and Biotechnology. Filter by subject or download notes for offline study.</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div id="admin-bar-placeholder"></div>
+        <div id="adminPanel" class="admin-panel hidden">
+          <h3>Add a new note</h3>
+          <form id="noteForm">
+            <div class="form-row">
+              <label for="noteTitle">Title</label>
+              <input type="text" id="noteTitle" required placeholder="e.g. Plant Anatomy - Vascular Tissue">
+            </div>
+            <div class="form-row">
+              <label for="noteSubject">Subject</label>
+              <select id="noteSubject" required>
+                <option value="Plant Anatomy">Plant Anatomy</option>
+                <option value="Plant Physiology">Plant Physiology</option>
+                <option value="Genetics">Genetics</option>
+                <option value="Taxonomy">Taxonomy</option>
+                <option value="Biotechnology">Biotechnology</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="noteDescription">Description</label>
+              <textarea id="noteDescription" required placeholder="Brief description of what this note covers"></textarea>
+            </div>
+            <div class="form-row">
+              <label for="noteFileName">File name (for reference / download label)</label>
+              <input type="text" id="noteFileName" placeholder="e.g. plant-anatomy-vascular.pdf">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Note</button>
+          </form>
+        </div>
+
+        <div class="filter-bar" id="subjectFilter">
+          <button data-subject="all" class="active">All Subjects</button>
+          <button data-subject="Plant Anatomy">Plant Anatomy</button>
+          <button data-subject="Plant Physiology">Plant Physiology</button>
+          <button data-subject="Genetics">Genetics</button>
+          <button data-subject="Taxonomy">Taxonomy</button>
+          <button data-subject="Biotechnology">Biotechnology</button>
+        </div>
+
+        <ul class="resource-list" id="notesList"></ul>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container grid grid-2">
+        <div>
+          <span class="eyebrow">🔬 Subject Overview</span>
+          <h2>Plant Anatomy & Physiology</h2>
+          <p>Plant Anatomy covers the internal structure of roots, stems, leaves, and reproductive organs — tissue systems, vascular bundles, and secondary growth. Plant Physiology builds on this by examining how plants function: photosynthesis, respiration, transpiration, plant hormones, and responses to stress.</p>
+        </div>
+        <div>
+          <span class="eyebrow">🧬 Subject Overview</span>
+          <h2>Genetics, Taxonomy & Biotechnology</h2>
+          <p>Genetics covers inheritance patterns, chromosomal behavior, and molecular basis of heredity. Taxonomy deals with identification, nomenclature, and classification of plants into families and orders. Biotechnology applies tools like tissue culture and genetic engineering to crop improvement and conservation.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("botany");
+    initAdminBar("admin-bar-placeholder", (isAdmin) => {
+      document.getElementById("adminPanel").classList.toggle("hidden", !isAdmin);
+      renderNotes();
+    });
+
+    let currentFilter = "all";
+
+    function renderNotes() {
+      const notes = DataStore.get("notes");
+      const isAdmin = AdminAuth.isLoggedIn();
+      const filtered = currentFilter === "all" ? notes : notes.filter(n => n.subject === currentFilter);
+
+      if (filtered.length === 0) {
+        document.getElementById("notesList").innerHTML = `<li class="resource-item"><span>No notes found for this subject yet.</span></li>`;
+        return;
+      }
+
+      document.getElementById("notesList").innerHTML = filtered.map(n => `
+        <li class="resource-item">
+          <div>
+            <div class="res-title">${escapeHtml(n.title)}</div>
+            <div class="res-meta">${escapeHtml(n.subject)}</div>
+            <p style="margin: 0.3rem 0 0; font-size:0.9rem;">${escapeHtml(n.description)}</p>
+          </div>
+          <div style="display:flex; gap:0.4rem; align-items:center; flex-shrink:0;">
+            <a class="btn btn-soil" href="#" onclick="alert('This is a demo download link for: ${escapeHtml(n.fileName || n.title)}'); return false;">Download</a>
+            ${isAdmin ? `<button class="btn btn-outline" style="border-color:var(--line); color:var(--ink);" onclick="deleteNote('${n.id}')">Delete</button>` : ''}
+          </div>
+        </li>
+      `).join("");
+    }
+
+    function deleteNote(id) {
+      if (!confirm("Delete this note?")) return;
+      const notes = DataStore.get("notes").filter(n => n.id !== id);
+      DataStore.set("notes", notes);
+      renderNotes();
+    }
+
+    // Filter buttons
+    document.querySelectorAll("#subjectFilter button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#subjectFilter button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.subject;
+        renderNotes();
+      });
+    });
+
+    // Add note form
+    document.getElementById("noteForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const notes = DataStore.get("notes");
+      notes.push({
+        id: DataStore.genId("n"),
+        title: document.getElementById("noteTitle").value.trim(),
+        subject: document.getElementById("noteSubject").value,
+        description: document.getElementById("noteDescription").value.trim(),
+        fileName: document.getElementById("noteFileName").value.trim()
+      });
+      DataStore.set("notes", notes);
+      e.target.reset();
+      renderNotes();
+    });
+
+    renderNotes();
+  </script>
+</body>
+</html>

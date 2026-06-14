@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Identification — AgriBotany Hub</title>
+  <meta name="description" content="Plant identification database with common name, scientific name, family, uses, and images.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">🔍 Specimen Records</span>
+      <h1>Plant Identification</h1>
+      <p>A growing database of plants with common name, scientific name, family, uses, and photos. Use the filters below or the site search to find a species.</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div id="admin-bar-placeholder"></div>
+        <div id="adminPanel" class="admin-panel hidden">
+          <h3>Add a plant record</h3>
+          <form id="plantForm">
+            <div class="grid grid-2">
+              <div class="form-row">
+                <label for="plantCommon">Common name</label>
+                <input type="text" id="plantCommon" required placeholder="e.g. Marigold">
+              </div>
+              <div class="form-row">
+                <label for="plantScientific">Scientific name</label>
+                <input type="text" id="plantScientific" required placeholder="e.g. Tagetes erecta">
+              </div>
+            </div>
+            <div class="grid grid-2">
+              <div class="form-row">
+                <label for="plantFamily">Family</label>
+                <input type="text" id="plantFamily" required placeholder="e.g. Asteraceae">
+              </div>
+              <div class="form-row">
+                <label for="plantCategory">Category</label>
+                <select id="plantCategory">
+                  <option value="Tree">Tree</option>
+                  <option value="Herb">Herb</option>
+                  <option value="Shrub">Shrub</option>
+                  <option value="Crop">Crop</option>
+                  <option value="Succulent">Succulent</option>
+                  <option value="Climber">Climber</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="plantUses">Uses</label>
+              <textarea id="plantUses" required placeholder="Describe key uses"></textarea>
+            </div>
+            <div class="form-row">
+              <label for="plantImage">Image (optional)</label>
+              <input type="file" id="plantImage" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Plant</button>
+          </form>
+        </div>
+
+        <div class="filter-bar" id="categoryFilter">
+          <button data-category="all" class="active">All</button>
+          <button data-category="Tree">Tree</button>
+          <button data-category="Herb">Herb</button>
+          <button data-category="Shrub">Shrub</button>
+          <button data-category="Crop">Crop</button>
+          <button data-category="Succulent">Succulent</button>
+          <button data-category="Climber">Climber</button>
+        </div>
+
+        <div class="grid grid-3" id="plantGrid"></div>
+      </div>
+    </section>
+
+    <!-- Tree ID tool -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-header center">
+          <span class="eyebrow">🌳 Tree Identification Tool</span>
+          <h2>Identify a Tree by Leaf Shape</h2>
+          <p>Select the leaf shape that best matches what you see, and get a shortlist of common tree species to compare against.</p>
+        </div>
+        <div class="grid grid-3" style="max-width:760px; margin: 0 auto;">
+          <div class="card">
+            <div class="meta">🍃 Leaf Shape</div>
+            <h3>Compound / Pinnate</h3>
+            <p>Leaflets arranged along a central stalk. Common in: Neem, Tamarind, Gulmohar, Drumstick.</p>
+          </div>
+          <div class="card">
+            <div class="meta">🍃 Leaf Shape</div>
+            <h3>Simple / Ovate</h3>
+            <p>Single, broad, egg-shaped leaf. Common in: Banyan, Peepal, Mango, Guava.</p>
+          </div>
+          <div class="card">
+            <div class="meta">🍃 Leaf Shape</div>
+            <h3>Needle-like</h3>
+            <p>Thin, narrow, needle-shaped leaves. Common in: Pine, Casuarina, Cypress.</p>
+          </div>
+        </div>
+        <p style="text-align:center; margin-top:1rem; font-size:0.9rem; color:var(--soil-deep);">Tip: Combine leaf shape with bark texture, flower color, and fruit type for accurate identification.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("plantid");
+    initAdminBar("admin-bar-placeholder", (isAdmin) => {
+      document.getElementById("adminPanel").classList.toggle("hidden", !isAdmin);
+      renderPlants();
+    });
+
+    let currentCategory = "all";
+    let searchFilter = (getQueryParam("q") || "").toLowerCase();
+
+    function renderPlants() {
+      let plants = DataStore.get("plants");
+      const isAdmin = AdminAuth.isLoggedIn();
+
+      if (currentCategory !== "all") {
+        plants = plants.filter(p => p.category === currentCategory);
+      }
+      if (searchFilter) {
+        plants = plants.filter(p =>
+          p.common.toLowerCase().includes(searchFilter) ||
+          p.scientific.toLowerCase().includes(searchFilter) ||
+          p.family.toLowerCase().includes(searchFilter) ||
+          p.uses.toLowerCase().includes(searchFilter)
+        );
+      }
+
+      if (plants.length === 0) {
+        document.getElementById("plantGrid").innerHTML = `<div class="card"><p>No plants found matching your filters.</p></div>`;
+        return;
+      }
+
+      document.getElementById("plantGrid").innerHTML = plants.map(p => `
+        <div class="specimen-card">
+          <div class="specimen-photo">
+            ${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.common)}">` : '🌿'}
+          </div>
+          <div class="specimen-body">
+            <div class="specimen-id">${escapeHtml(p.category)}</div>
+            <h3>${escapeHtml(p.scientific)}</h3>
+            <div class="specimen-common">${escapeHtml(p.common)}</div>
+            <table class="specimen-table">
+              <tr><td>Family</td><td>${escapeHtml(p.family)}</td></tr>
+              <tr><td>Uses</td><td>${escapeHtml(p.uses)}</td></tr>
+            </table>
+            ${isAdmin ? `<button class="btn btn-outline" style="border-color:var(--line); color:var(--ink); width:100%; margin-top:0.4rem;" onclick="deletePlant('${p.id}')">Delete</button>` : ''}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function deletePlant(id) {
+      if (!confirm("Delete this plant record?")) return;
+      const plants = DataStore.get("plants").filter(p => p.id !== id);
+      DataStore.set("plants", plants);
+      renderPlants();
+    }
+
+    document.querySelectorAll("#categoryFilter button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#categoryFilter button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentCategory = btn.dataset.category;
+        renderPlants();
+      });
+    });
+
+    document.getElementById("plantForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById("plantImage");
+      readImageAsDataURL(fileInput, (imageData) => {
+        const plants = DataStore.get("plants");
+        plants.push({
+          id: DataStore.genId("p"),
+          common: document.getElementById("plantCommon").value.trim(),
+          scientific: document.getElementById("plantScientific").value.trim(),
+          family: document.getElementById("plantFamily").value.trim(),
+          category: document.getElementById("plantCategory").value,
+          uses: document.getElementById("plantUses").value.trim(),
+          image: imageData
+        });
+        DataStore.set("plants", plants);
+        e.target.reset();
+        renderPlants();
+      });
+    });
+
+    renderPlants();
+  </script>
+</body>
+</html>

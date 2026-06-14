@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriBotany Hub — Botany, Agriculture & Forestry Resources</title>
+  <meta name="description" content="AgriBotany Hub: a student-built resource combining Botany, Agriculture, Forestry, Plant Science and Medicinal Plants — notes, plant identification, career guidance and quizzes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="eyebrow">Field Notes · Vol. 1</span>
+        <h1>Where Botany meets the field, the farm, and the forest.</h1>
+        <p class="lead">AgriBotany Hub is a growing collection of notes, plant records, and career resources built by a B.Sc. Botany student — for fellow students, farmers, and nature enthusiasts.</p>
+        <div class="hero-actions">
+          <a href="botany-notes.html" class="btn btn-primary">Browse Botany Notes</a>
+          <a href="plant-id.html" class="btn btn-outline">Explore Plant ID</a>
+          <a href="quiz.html" class="btn btn-outline">Take a Quiz</a>
+        </div>
+      </div>
+      <div class="hero-card" id="potdCard">
+        <!-- Plant of the Day injected here -->
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <!-- Latest agriculture news -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="eyebrow">Field Bulletin</span>
+          <h2>Latest in Agriculture & Plant Science</h2>
+        </div>
+        <div class="grid grid-3" id="newsGrid"></div>
+      </div>
+    </section>
+
+    <!-- Featured plants -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="eyebrow">Specimen Records</span>
+          <h2>Featured Plants</h2>
+          <p>A sample from the Plant Identification database — common name, scientific name, family, and uses.</p>
+        </div>
+        <div class="grid grid-3" id="featuredPlants"></div>
+        <p style="margin-top:1.2rem;"><a href="plant-id.html" class="btn btn-soil">View full Plant ID database →</a></p>
+      </div>
+    </section>
+
+    <!-- Quick links to sections -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="eyebrow">Navigate</span>
+          <h2>Explore the Hub</h2>
+        </div>
+        <div class="grid grid-4">
+          <div class="card">
+            <div class="meta">📚 Study</div>
+            <h3>Botany Notes</h3>
+            <p>Plant Anatomy, Physiology, Genetics, Taxonomy & Biotechnology notes for B.Sc. students.</p>
+            <a class="card-link" href="botany-notes.html">Open notes →</a>
+          </div>
+          <div class="card">
+            <div class="meta">🌾 Practice</div>
+            <h3>Agriculture</h3>
+            <p>Crop cultivation, organic farming, soil management, irrigation, and pest control.</p>
+            <a class="card-link" href="agriculture.html">Explore →</a>
+          </div>
+          <div class="card">
+            <div class="meta">🌳 Field Guide</div>
+            <h3>Forestry Corner</h3>
+            <p>Forest types, tree species, wildlife conservation, and Forest Officer career guidance.</p>
+            <a class="card-link" href="forestry.html">Read more →</a>
+          </div>
+          <div class="card">
+            <div class="meta">🎯 Careers</div>
+            <h3>Career Guidance</h3>
+            <p>TNAU courses, agriculture jobs, Forest Department careers, and research opportunities.</p>
+            <a class="card-link" href="careers.html">Plan ahead →</a>
+          </div>
+          <div class="card">
+            <div class="meta">🌱 Healing Plants</div>
+            <h3>Medicinal Plants</h3>
+            <p>Traditional uses, active compounds, and cultivation methods of important medicinal species.</p>
+            <a class="card-link" href="medicinal-plants.html">Discover →</a>
+          </div>
+          <div class="card">
+            <div class="meta">🐝 Training</div>
+            <h3>Internship & Apiculture</h3>
+            <p>DBT Builder Lab internship experience and apiculture training notes.</p>
+            <a class="card-link" href="internship.html">View details →</a>
+          </div>
+          <div class="card">
+            <div class="meta">📝 Practice Tests</div>
+            <h3>Quiz Section</h3>
+            <p>Botany MCQs, Agriculture MCQs, and Forest Guard exam practice questions.</p>
+            <a class="card-link" href="quiz.html">Start quiz →</a>
+          </div>
+          <div class="card">
+            <div class="meta">✍️ Read</div>
+            <h3>Blog</h3>
+            <p>Articles on plants, agriculture, and environmental conservation.</p>
+            <a class="card-link" href="blog.html">Read articles →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About intro -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="grid grid-2">
+          <div>
+            <span class="eyebrow">About this project</span>
+            <h2>Botany & Agriculture, side by side</h2>
+            <p>Botany is the scientific study of plants — their structure, growth, classification, and uses. Agriculture applies that knowledge to grow food, fibre, and other crops sustainably. This hub brings the two together, alongside forestry and conservation, in one student-curated resource.</p>
+            <p>Whether you're preparing for a B.Sc. Botany exam, planning an organic farm plot, identifying a plant on a nature walk, or studying for a Forest Guard exam — there's a corner here for you.</p>
+            <a href="contact.html" class="btn btn-soil">Get in touch</a>
+          </div>
+          <div class="card">
+            <div class="meta">🌿 Did you know?</div>
+            <h3>Taxonomy in a nutshell</h3>
+            <p>Every plant has a unique two-part scientific name (genus + species) under the binomial system devised by Carl Linnaeus — a system still used in Botany Notes and the Plant ID database on this site.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("home");
+
+    // ===== Plant of the Day =====
+    const potd = DataStore.get("potd");
+    document.getElementById("potdCard").innerHTML = `
+      <span class="eyebrow">🌱 Plant of the Day</span>
+      <div class="specimen-photo" style="aspect-ratio:16/10; margin-bottom:0.8rem; border-radius:var(--radius);">
+        ${potd.image ? `<img src="${potd.image}" alt="${escapeHtml(potd.common)}">` : '🌿'}
+      </div>
+      <h3 style="font-style:italic; margin-bottom:0.1rem;">${escapeHtml(potd.scientific)}</h3>
+      <div class="specimen-common">${escapeHtml(potd.common)} · ${escapeHtml(potd.family)}</div>
+      <p style="font-size:0.9rem; margin-bottom:0;">${escapeHtml(potd.note)}</p>
+    `;
+
+    // ===== Latest news (static curated bulletin) =====
+    const newsItems = [
+      { tag: "Agriculture", title: "Soil testing drives precision input use", body: "Farmers increasingly use soil health cards to decide fertilizer dosage, reducing input costs and improving yield consistency." },
+      { tag: "Forestry", title: "Native afforestation gains momentum", body: "Conservation programs prioritize indigenous tree species to restore degraded land and support local biodiversity." },
+      { tag: "Plant Science", title: "Tissue culture boosts disease-free planting", body: "Micropropagation techniques are helping produce disease-free banana, sugarcane, and ornamental plant stock at scale." }
+    ];
+    document.getElementById("newsGrid").innerHTML = newsItems.map(n => `
+      <div class="card">
+        <div class="meta">${n.tag}</div>
+        <h3>${n.title}</h3>
+        <p>${n.body}</p>
+      </div>
+    `).join("");
+
+    // ===== Featured plants (first 3 from Plant ID database) =====
+    const plants = DataStore.get("plants").slice(0, 3);
+    document.getElementById("featuredPlants").innerHTML = plants.map(p => `
+      <div class="specimen-card">
+        <div class="specimen-photo">
+          ${p.image ? `<img src="${p.image}" alt="${escapeHtml(p.common)}">` : '🌿'}
+        </div>
+        <div class="specimen-body">
+          <div class="specimen-id">${escapeHtml(p.category)}</div>
+          <h3>${escapeHtml(p.scientific)}</h3>
+          <div class="specimen-common">${escapeHtml(p.common)}</div>
+          <table class="specimen-table">
+            <tr><td>Family</td><td>${escapeHtml(p.family)}</td></tr>
+            <tr><td>Uses</td><td>${escapeHtml(p.uses)}</td></tr>
+          </table>
+        </div>
+      </div>
+    `).join("");
+  </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — AgriBotany Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">🔧 Site Admin</span>
+      <h1>Admin Panel</h1>
+      <p>Log in to edit content across the site — notes, plant records, blog posts, crop calendar, and Plant of the Day.</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+
+        <!-- Login form -->
+        <div class="card" id="loginCard" style="max-width:420px;">
+          <h3>Admin Login</h3>
+          <form id="loginForm">
+            <div class="form-row">
+              <label for="adminPassword">Password</label>
+              <input type="password" id="adminPassword" required placeholder="Enter admin password">
+            </div>
+            <button type="submit" class="btn btn-primary">Log in</button>
+          </form>
+          <p id="loginError" style="display:none; color:#B5544A; font-size:0.85rem; margin-top:0.6rem;">Incorrect password. Try again.</p>
+          <p style="margin-top:1rem; font-size:0.85rem; color:var(--soil-deep);">Demo password: <code>agribotany2026</code></p>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" style="display:none;">
+          <div class="admin-bar" style="margin-bottom:1.5rem; border-radius:var(--radius);">
+            <span>🔧 Logged in as Admin</span>
+            <button id="logoutBtn">Log out</button>
+          </div>
+
+          <div class="section-header">
+            <span class="eyebrow">Dashboard</span>
+            <h2>What would you like to edit?</h2>
+            <p>Once logged in, an admin bar and inline editing controls (add/delete) appear on the relevant content pages. Use the links below to jump to each section.</p>
+          </div>
+          <div class="grid grid-3">
+            <div class="card">
+              <h3>📚 Botany Notes</h3>
+              <p>Add or remove study notes by subject.</p>
+              <a class="card-link" href="botany-notes.html">Manage notes →</a>
+            </div>
+            <div class="card">
+              <h3>🌾 Crop Calendar</h3>
+              <p>Add or remove crop calendar entries.</p>
+              <a class="card-link" href="agriculture.html">Manage calendar →</a>
+            </div>
+            <div class="card">
+              <h3>🔍 Plant ID Database</h3>
+              <p>Add new plant records with images, or remove existing ones.</p>
+              <a class="card-link" href="plant-id.html">Manage plants →</a>
+            </div>
+            <div class="card">
+              <h3>🌱 Medicinal Plants</h3>
+              <p>Add or remove medicinal plant records.</p>
+              <a class="card-link" href="medicinal-plants.html">Manage records →</a>
+            </div>
+            <div class="card">
+              <h3>✍️ Blog</h3>
+              <p>Publish new articles or remove existing posts.</p>
+              <a class="card-link" href="blog.html">Manage posts →</a>
+            </div>
+            <div class="card">
+              <h3>🌿 Plant of the Day</h3>
+              <p>Update the featured plant shown on the homepage.</p>
+              <a class="card-link" href="#" onclick="document.getElementById('potdEditor').scrollIntoView({behavior:'smooth'}); return false;">Edit below →</a>
+            </div>
+          </div>
+
+          <!-- Plant of the Day Editor -->
+          <div class="admin-panel" id="potdEditor" style="margin-top:2rem;">
+            <h3>🌿 Edit Plant of the Day</h3>
+            <form id="potdForm">
+              <div class="grid grid-2">
+                <div class="form-row">
+                  <label for="potdCommon">Common name</label>
+                  <input type="text" id="potdCommon" required>
+                </div>
+                <div class="form-row">
+                  <label for="potdScientific">Scientific name</label>
+                  <input type="text" id="potdScientific" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <label for="potdFamily">Family</label>
+                <input type="text" id="potdFamily" required>
+              </div>
+              <div class="form-row">
+                <label for="potdNote">Note / description</label>
+                <textarea id="potdNote" required></textarea>
+              </div>
+              <div class="form-row">
+                <label for="potdImage">Image (optional)</label>
+                <input type="file" id="potdImage" accept="image/*">
+              </div>
+              <button type="submit" class="btn btn-primary">Save Plant of the Day</button>
+            </form>
+            <p id="potdStatus" style="display:none; color:var(--sage-deep); font-family:var(--font-mono); font-size:0.85rem; margin-top:0.6rem;">Saved! Visit the homepage to see the update.</p>
+          </div>
+
+          <!-- Reset data -->
+          <div class="admin-panel" style="margin-top:1.5rem; border-color:#B5544A;">
+            <h3 style="color:#B5544A;">⚠️ Reset Site Data</h3>
+            <p>This restores all content (notes, plants, blog posts, crop calendar, quizzes, Plant of the Day) to the original defaults. Any custom additions will be lost.</p>
+            <button class="btn" style="background:#B5544A; color:white;" id="resetBtn">Reset to Defaults</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("home");
+
+    function showDashboard() {
+      document.getElementById("loginCard").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      const potd = DataStore.get("potd");
+      document.getElementById("potdCommon").value = potd.common;
+      document.getElementById("potdScientific").value = potd.scientific;
+      document.getElementById("potdFamily").value = potd.family;
+      document.getElementById("potdNote").value = potd.note;
+    }
+
+    if (AdminAuth.isLoggedIn()) {
+      showDashboard();
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const pwd = document.getElementById("adminPassword").value;
+      if (AdminAuth.login(pwd)) {
+        document.getElementById("loginError").style.display = "none";
+        showDashboard();
+      } else {
+        document.getElementById("loginError").style.display = "block";
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      AdminAuth.logout();
+      document.getElementById("dashboard").style.display = "none";
+      document.getElementById("loginCard").style.display = "block";
+      document.getElementById("loginForm").reset();
+    });
+
+    document.getElementById("potdForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById("potdImage");
+      const current = DataStore.get("potd");
+      readImageAsDataURL(fileInput, (imageData) => {
+        DataStore.set("potd", {
+          common: document.getElementById("potdCommon").value.trim(),
+          scientific: document.getElementById("potdScientific").value.trim(),
+          family: document.getElementById("potdFamily").value.trim(),
+          note: document.getElementById("potdNote").value.trim(),
+          image: imageData || current.image
+        });
+        document.getElementById("potdStatus").style.display = "block";
+        setTimeout(() => document.getElementById("potdStatus").style.display = "none", 3000);
+      });
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (!confirm("This will erase all custom edits and restore default content. Continue?")) return;
+      DataStore.resetToDefaults();
+      alert("Site data has been reset to defaults.");
+      showDashboard();
+    });
+  </script>
+</body>
+</html>

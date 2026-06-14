@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — AgriBotany Hub</title>
+  <meta name="description" content="Get in touch with AgriBotany Hub.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">📬 Get in Touch</span>
+      <h1>Contact</h1>
+      <p>Questions, suggestions, or content contributions — send a message below.</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Send a message</h3>
+            <form id="contactForm">
+              <div class="form-row">
+                <label for="cName">Name</label>
+                <input type="text" id="cName" required placeholder="Your name">
+              </div>
+              <div class="form-row">
+                <label for="cEmail">Email</label>
+                <input type="email" id="cEmail" required placeholder="you@example.com">
+              </div>
+              <div class="form-row">
+                <label for="cSubject">Subject</label>
+                <input type="text" id="cSubject" required placeholder="What's this about?">
+              </div>
+              <div class="form-row">
+                <label for="cMessage">Message</label>
+                <textarea id="cMessage" required style="min-height:120px;" placeholder="Your message"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+            <p id="contactStatus" style="display:none; margin-top:1rem; font-family:var(--font-mono); font-size:0.85rem; color:var(--sage-deep);">Thanks — your message has been noted. (This is a demo form; no email is actually sent.)</p>
+          </div>
+          <div>
+            <span class="eyebrow">About</span>
+            <h2>AgriBotany Hub</h2>
+            <p>This site is built and maintained by a B.Sc. Botany student as a resource for fellow students, farmers, and nature enthusiasts. Content spans Botany fundamentals, agricultural practices, forestry, medicinal plants, and career guidance.</p>
+            <p>If you'd like to contribute notes, suggest corrections, or share plant records for the identification database, use the form or reach out via the channels below.</p>
+            <h3 style="margin-top:1.5rem;">Quick links</h3>
+            <ul style="padding-left:1.2rem;">
+              <li><a href="botany-notes.html">Botany Notes</a></li>
+              <li><a href="plant-id.html">Plant Identification database</a></li>
+              <li><a href="quiz.html">Quiz Section</a></li>
+              <li><a href="admin.html">Admin Login</a> (for site editors)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("contact");
+
+    document.getElementById("contactForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      document.getElementById("contactStatus").style.display = "block";
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

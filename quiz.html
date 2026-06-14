@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Section — AgriBotany Hub</title>
+  <meta name="description" content="Botany MCQs, Agriculture MCQs, and Forest Guard exam practice questions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow">📝 Practice</span>
+      <h1>Quiz Section</h1>
+      <p>Test your knowledge with Botany MCQs, Agriculture MCQs, and Forest Guard exam practice questions.</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="filter-bar" id="quizFilter">
+          <button data-set="botany" class="active">Botany MCQs</button>
+          <button data-set="agriculture">Agriculture MCQs</button>
+          <button data-set="forestguard">Forest Guard Exam</button>
+        </div>
+
+        <div class="quiz-card" id="quizCard"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    initSharedUI("quiz");
+
+    let currentSet = "botany";
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    function startSet(setKey) {
+      currentSet = setKey;
+      currentIndex = 0;
+      score = 0;
+      answered = false;
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const questions = DataStore.get("quizzes")[currentSet];
+      const card = document.getElementById("quizCard");
+
+      if (currentIndex >= questions.length) {
+        card.innerHTML = `
+          <h3>Quiz complete! 🎉</h3>
+          <p>You scored <strong>${score} / ${questions.length}</strong>.</p>
+          <button class="btn btn-primary" onclick="startSet('${currentSet}')">Retake this quiz</button>
+        `;
+        return;
+      }
+
+      const q = questions[currentIndex];
+      answered = false;
+
+      card.innerHTML = `
+        <div class="quiz-progress" style="margin-bottom:0.5rem;">Question ${currentIndex + 1} of ${questions.length} · Score: ${score}</div>
+        <div class="quiz-q">${escapeHtml(q.q)}</div>
+        <div class="quiz-options" id="quizOptions">
+          ${q.options.map((opt, idx) => `
+            <label data-idx="${idx}">
+              <input type="radio" name="quizOption" value="${idx}">
+              <span>${escapeHtml(opt)}</span>
+            </label>
+          `).join("")}
+        </div>
+        <div class="quiz-nav">
+          <button class="btn btn-outline" style="border-color:var(--line); color:var(--ink);" onclick="checkAnswer()">Check Answer</button>
+          <button class="btn btn-soil" onclick="nextQuestion()">${currentIndex + 1 === questions.length ? 'Finish' : 'Next Question'}</button>
+        </div>
+      `;
+
+      document.querySelectorAll('#quizOptions label').forEach(label => {
+        label.addEventListener('click', () => {
+          if (answered) return;
+          document.querySelectorAll('#quizOptions input').forEach(i => i.checked = false);
+          label.querySelector('input').checked = true;
+        });
+      });
+    }
+
+    function checkAnswer() {
+      if (answered) return;
+      const questions = DataStore.get("quizzes")[currentSet];
+      const q = questions[currentIndex];
+      const selected = document.querySelector('#quizOptions input:checked');
+
+      if (!selected) {
+        alert("Please select an answer first.");
+        return;
+      }
+
+      answered = true;
+      const selectedIdx = parseInt(selected.value, 10);
+      const labels = document.querySelectorAll('#quizOptions label');
+
+      labels.forEach((label, idx) => {
+        if (idx === q.answer) label.classList.add('correct');
+        else if (idx === selectedIdx) label.classList.add('incorrect');
+      });
+
+      if (selectedIdx === q.answer) score++;
+    }
+
+    function nextQuestion() {
+      if (!answered) {
+        if (!confirm("You haven't checked your answer. Continue anyway?")) return;
+      }
+      currentIndex++;
+      renderQuestion();
+    }
+
+    document.querySelectorAll("#quizFilter button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#quizFilter button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        startSet(btn.dataset.set);
+      });
+    });
+
+    startSet("botany");
+  </script>
+</body>
+</html>
